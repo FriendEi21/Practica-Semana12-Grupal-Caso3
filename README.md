@@ -1,6 +1,6 @@
 # Caso 3: Sistema de Control de Asistencia y Permisos (TecnoAndes S.A.C.)
 
-Aplicación web fullstack en Django 5.x desarrollada para la Práctica Grupal Semana 12 (IS093A). Automatiza el registro diario de asistencia con cálculo de horas extras, gestión jerárquica de permisos/vacaciones, reportes corporativos exportables en texto y auditoría integral mediante middleware.
+Aplicación web fullstack en Django 6.1.3 desarrollada para la Práctica Grupal Semana 12 (IS093A). Automatiza el registro diario de asistencia con cálculo de horas extras, gestión jerárquica de permisos/vacaciones, reportes corporativos exportables en texto y auditoría integral mediante middleware.
 
 ## 1. Matriz de Roles Jerárquicos y Permisos
 
