@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitar Permiso | TecnoAndes S.A.C.{% endblock %}
+
+{% block content %}
+<section class="panel panel-angosto">
+    <h2>Solicitud de Permiso o Vacaciones</h2>
+    <p style="font-size:0.9rem; color:#52525b;">
+        Saldo disponible actual: <span class="badge badge-ok">{{ empleado.dias_vacaciones_disponibles }} días</span>
+        (No se permiten permisos superpuestos).
+    </p>
+
+    {% if form.errors %}
+        <div class="alerta alerta-error">
+            <strong>Revise las validaciones:</strong>
+            {{ form.errors }}
+        </div><!-- Fin div.alerta-error -->
+    {% endif %}
+
+    <form method="post" class="formulario" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primario">Enviar Solicitud</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-secundario">Volver</a>
+    </form><!-- Fin form solicitar_permiso -->
+</section><!-- Fin section.panel -->
+{% endblock %}

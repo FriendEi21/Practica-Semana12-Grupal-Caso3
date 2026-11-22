@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Control de Asistencia | TecnoAndes S.A.C.{% endblock %}</title>
+    <style>
+        :root {
+            --grafito: #18181b;
+            --grafito-suave: #27272a;
+            --ambar: #d97706;
+            --ambar-hover: #b45309;
+            --fondo: #f4f4f5;
+            --superficie: #ffffff;
+            --borde: #d4d4d8;
+            --texto: #27272a;
+            --texto-suave: #52525b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--fondo);
+            color: var(--texto);
+        }
+        header {
+            background: linear-gradient(90deg, var(--grafito) 0%, var(--grafito-suave) 100%);
+            color: #fafafa;
+            border-bottom: 4px solid var(--ambar);
+            box-shadow: 0 2px 10px rgba(24, 24, 27, 0.25);
+        }
+        .header-interno {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .marca-bloque { display: flex; flex-direction: column; }
+        .marca-titulo { font-size: 1.15rem; font-weight: 700; }
+        .marca-subtitulo { font-size: 0.78rem; color: #fcd34d; }
+        nav {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+        }
+        .nav-btn {
+            color: #f4f4f5;
+            text-decoration: none;
+            padding: 0.45rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.08);
+            transition: background-color 0.2s ease;
+        }
+        .nav-btn:hover { background-color: var(--ambar); color: #ffffff; }
+        .nav-btn-acento { background-color: var(--ambar); color: #ffffff; font-weight: 600; }
+        .nav-btn-acento:hover { background-color: var(--ambar-hover); }
+        .btn-logout {
+            background-color: #dc2626;
+            color: #ffffff;
+            border: none;
+            padding: 0.45rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-logout:hover { background-color: #b91c1c; }
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1180px;
+            margin: 1.75rem auto;
+            padding: 0 1.25rem;
+        }
+        .panel {
+            background-color: var(--superficie);
+            border: 1px solid var(--borde);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(24, 24, 27, 0.06);
+            margin-bottom: 1.5rem;
+        }
+        .panel-angosto { max-width: 600px; margin: 0 auto 1.5rem auto; }
+        .grid-dos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+        h1, h2, h3 { margin-top: 0; color: var(--grafito); }
+        .alerta {
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.92rem;
+            border-left: 4px solid var(--ambar);
+            background-color: #fef3c7;
+            color: #78350f;
+        }
+        .alerta-error {
+            border-left-color: #dc2626;
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .alerta-ok {
+            border-left-color: #16a34a;
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .tabla-responsive { width: 100%; overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.75rem;
+            font-size: 0.89rem;
+        }
+        th, td {
+            padding: 0.72rem 0.8rem;
+            border-bottom: 1px solid #e4e4e7;
+            text-align: left;
+            white-space: nowrap;
+        }
+        th { background-color: #fafafa; color: var(--grafito); font-weight: 600; }
+        .badge {
+            display: inline-block;
+            padding: 0.22rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .badge-ok { background: #dcfce7; color: #166534; }
+        .badge-warn { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-dark { background: #e4e4e7; color: #18181b; }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 0.95rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.86rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-primario { background-color: var(--ambar); color: #ffffff; }
+        .btn-primario:hover { background-color: var(--ambar-hover); }
+        .btn-oscuro { background-color: var(--grafito); color: #ffffff; }
+        .btn-ok { background-color: #16a34a; color: #ffffff; }
+        .btn-peligro { background-color: #dc2626; color: #ffffff; }
+        .btn-secundario { background-color: #e4e4e7; color: #18181b; }
+        .formulario p { margin-bottom: 1rem; }
+        .formulario label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+        }
+        .formulario input, .formulario select, .formulario textarea {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #a1a1aa;
+            border-radius: 6px;
+            font-size: 0.94rem;
+            font-family: inherit;
+        }
+        footer {
+            background-color: var(--grafito);
+            color: #d4d4d8;
+            border-top: 3px solid var(--ambar);
+            margin-top: auto;
+        }
+        .footer-interno {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 1.15rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+        }
+        .footer-autor { color: #fbbf24; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-interno">
+            <div class="marca-bloque">
+                <span class="marca-titulo">Control de Asistencia y Gestión de Permisos</span>
+                <span class="marca-subtitulo">TecnoAndes S.A.C. — Portal Corporativo RRHH</span>
+            </div><!-- Fin div.marca-bloque -->
+
+            <nav>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="nav-btn">Marcación</a>
+                    <a href="{% url 'solicitar_permiso' %}" class="nav-btn nav-btn-acento">+ Pedir Permiso</a>
+                    {% if rol == "Jefe de Área" or rol == "Admin RRHH" %}
+                        <a href="{% url 'gestionar_permisos' %}" class="nav-btn">Aprobaciones</a>
+                    {% endif %}
+                    {% if rol != "Empleado" %}
+                        <a href="{% url 'reportes' %}" class="nav-btn">Reportes</a>
+                    {% endif %}
+                    {% if rol == "Admin RRHH" %}
+                        <a href="/admin/" class="nav-btn">Admin RRHH</a>
+                    {% endif %}
+                    <form method="post" action="{% url 'logout' %}" style="margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-logout">Salir ({{ user.username }})</button>
+                    </form><!-- Fin form logout -->
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-btn nav-btn-acento">Acceso Corporativo</a>
+                {% endif %}
+            </nav><!-- Fin nav -->
+        </div><!-- Fin div.header-interno -->
+    </header><!-- Fin header -->
+
+    <main>
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alerta {% if msg.tags == 'error' %}alerta-error{% elif msg.tags == 'success' %}alerta-ok{% endif %}">
+                    {{ msg }}
+                </div><!-- Fin div.alerta -->
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main><!-- Fin main -->
+
+    <footer>
+        <div class="footer-interno">
+            <span>© 2026 Todos los derechos reservados por <span class="footer-autor">FriendEi21</span></span>
+            <span>TecnoAndes S.A.C. | Control de Asistencia IS093A Semana 12</span>
+        </div><!-- Fin div.footer-interno -->
+    </footer><!-- Fin footer -->
+</body>
+</html>

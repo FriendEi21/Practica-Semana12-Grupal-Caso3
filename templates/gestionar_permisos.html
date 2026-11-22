@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Aprobación de Permisos | TecnoAndes S.A.C.{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h2>Bandeja de Aprobación de Permisos ({% if rol == "Admin RRHH" %}Global{% else %}Área: {{ mi_empleado.area.nombre }}{% endif %})</h2>
+
+    <div class="tabla-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Empleado</th>
+                    <th>Área</th>
+                    <th>Tipo</th>
+                    <th>Rango</th>
+                    <th>Días</th>
+                    <th>Estado</th>
+                    <th>Decisión</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in permisos %}
+                <tr>
+                    <td>#{{ p.id }}</td>
+                    <td>{{ p.empleado.apellidos }}, {{ p.empleado.nombres }}</td>
+                    <td>{{ p.empleado.area.nombre }}</td>
+                    <td>{{ p.get_tipo_display }}</td>
+                    <td>{{ p.fecha_inicio|date:"d/m/Y" }} - {{ p.fecha_fin|date:"d/m/Y" }}</td>
+                    <td>{{ p.dias_solicitados }}</td>
+                    <td>
+                        {% if p.estado == "aprobado" %}
+                            <span class="badge badge-ok">Aprobado</span>
+                        {% elif p.estado == "pendiente" %}
+                            <span class="badge badge-warn">Pendiente</span>
+                        {% else %}
+                            <span class="badge badge-danger">Rechazado</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if p.estado == "pendiente" %}
+                            <form method="post" action="{% url 'decidir_permiso' p.id %}" style="display:flex; gap:0.4rem; margin:0;">
+                                {% csrf_token %}
+                                <button type="submit" name="decision" value="aprobado" class="btn btn-ok">Aprobar</button>
+                                <button type="submit" name="decision" value="rechazado" class="btn btn-peligro">Rechazar</button>
+                            </form><!-- Fin form decidir -->
+                        {% else %}
+                            <span style="font-size:0.82rem; color:#52525b;">Por {{ p.revisado_por.username|default:"RRHH" }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8">No hay permisos en su bandeja.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div><!-- Fin div.tabla-responsive -->
+</section><!-- Fin section.panel -->
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Corregir Asistencia | TecnoAndes S.A.C.{% endblock %}
+
+{% block content %}
+<section class="panel panel-angosto">
+    <h2>Corrección de Asistencia #{{ registro.id }} (Solo RRHH)</h2>
+    <p style="font-size:0.9rem; color:#52525b;">
+        <strong>Empleado:</strong> {{ registro.empleado.apellidos }}, {{ registro.empleado.nombres }} |
+        <strong>Fecha:</strong> {{ registro.fecha|date:"d/m/Y" }}
+    </p>
+
+    {% if form.errors %}
+        <div class="alerta alerta-error">
+            {{ form.errors }}
+        </div><!-- Fin div.alerta-error -->
+    {% endif %}
+
+    <form method="post" class="formulario" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primario">Guardar Corrección Auditada</button>
+        <a href="{% url 'reportes' %}" class="btn btn-secundario">Cancelar</a>
+    </form><!-- Fin form corregir_asistencia -->
+</section><!-- Fin section.panel -->
+{% endblock %}

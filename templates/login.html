@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Acceso Corporativo | TecnoAndes S.A.C.{% endblock %}
+
+{% block content %}
+<section class="panel panel-angosto">
+    <h2>Ingreso al Portal TecnoAndes S.A.C.</h2>
+    <p style="font-size:0.9rem; color:#52525b;">
+        Autenticación corporativa por jerarquía (Admin RRHH, Jefe de Área, Contador y Empleado — timeout 45 min).
+    </p>
+
+    {% if form.errors %}
+        <div class="alerta alerta-error">
+            Credenciales corporativas inválidas.
+        </div><!-- Fin div.alerta-error -->
+    {% endif %}
+
+    <form method="post" class="formulario">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primario">Ingresar</button>
+    </form><!-- Fin form login -->
+</section><!-- Fin section.panel -->
+{% endblock %}

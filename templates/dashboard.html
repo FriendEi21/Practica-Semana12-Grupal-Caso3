@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Marcación Rápida | TecnoAndes S.A.C.{% endblock %}
+
+{% block content %}
+<div class="grid-dos">
+    <section class="panel">
+        <h2>Marcación Diaria de Asistencia</h2>
+        {% if empleado %}
+            <p style="font-size:0.88rem; color:#52525b;">
+                <strong>Colaborador:</strong> {{ empleado.apellidos }}, {{ empleado.nombres }} |
+                <strong>Área:</strong> {{ empleado.area.nombre }}<br>
+                <strong>Rol:</strong> <span class="badge badge-dark">{{ rol }}</span> |
+                <strong>Antigüedad:</strong> {{ empleado.antiguedad_texto }} |
+                <strong>Vacaciones disponibles:</strong> <span class="badge badge-ok">{{ empleado.dias_vacaciones_disponibles }} días</span>
+            </p>
+
+            {% if form.errors %}
+                <div class="alerta alerta-error">
+                    {{ form.errors }}
+                </div><!-- Fin div.alerta-error -->
+            {% endif %}
+
+            <form method="post" class="formulario" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primario">Registrar Marcación</button>
+            </form><!-- Fin form marcacion -->
+        {% else %}
+            <p>Esta cuenta administrativa no tiene un perfil de trabajador asociado.</p>
+        {% endif %}
+    </section><!-- Fin section marcacion -->
+
+    <section class="panel">
+        <h2>Mis Solicitudes de Permisos</h2>
+        <p style="margin-top:-0.4rem;">
+            <a href="{% url 'solicitar_permiso' %}" class="btn btn-oscuro">+ Nueva Solicitud</a>
+        </p>
+        <div class="tabla-responsive">
+            <table>
+                <thead>
+                    <tr><th>Tipo</th><th>Fechas</th><th>Días</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                    {% for perm in mis_permisos %}
+                    <tr>
+                        <td>{{ perm.get_tipo_display }}</td>
+                        <td>{{ perm.fecha_inicio|date:"d/m/Y" }} - {{ perm.fecha_fin|date:"d/m/Y" }}</td>
+                        <td>{{ perm.dias_solicitados }}</td>
+                        <td>
+                            {% if perm.estado == "aprobado" %}
+                                <span class="badge badge-ok">Aprobado</span>
+                            {% elif perm.estado == "pendiente" %}
+                                <span class="badge badge-warn">Pendiente</span>
+                            {% else %}
+                                <span class="badge badge-danger">Rechazado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4">No tiene solicitudes registradas.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div><!-- Fin div.tabla-responsive -->
+    </section><!-- Fin section permisos -->
+</div><!-- Fin div.grid-dos -->
+
+<section class="panel">
+    <h2>Mi Historial Reciente de Asistencia</h2>
+    <div class="tabla-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Entrada</th>
+                    <th>Salida</th>
+                    <th>Horas Trab.</th>
+                    <th>Horas Extras</th>
+                    <th>Observación</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in mis_asistencias %}
+                <tr>
+                    <td>{{ a.fecha|date:"d/m/Y" }}</td>
+                    <td>{{ a.hora_entrada|time:"H:i" }}</td>
+                    <td>{% if a.hora_salida %}{{ a.hora_salida|time:"H:i" }}{% else %}<em>Abierta</em>{% endif %}</td>
+                    <td>{{ a.horas_trabajadas }} h</td>
+                    <td>
+                        {% if a.horas_extras > 0 %}
+                            <span class="badge badge-warn">+{{ a.horas_extras }} h</span>
+                        {% else %}
+                            0.00 h
+                        {% endif %}
+                    </td>
+                    <td>{% if a.corregida %}<span class="badge badge-dark">Corregida por RRHH</span>{% else %}Normal{% endif %}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6">Sin marcaciones registradas todavía.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div><!-- Fin div.tabla-responsive -->
+</section><!-- Fin section historial -->
+{% endblock %}

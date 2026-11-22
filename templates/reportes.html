@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes Corporativos | TecnoAndes S.A.C.{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+        <h2>Reporte de Horas Extras y Saldos ({% if ver_global %}Global{% else %}Solo mi Área{% endif %})</h2>
+        <a href="{% url 'exportar_asistencia' %}" target="_blank" class="btn btn-oscuro">Exportar Reporte (.TXT)</a>
+    </div><!-- Fin div cabecera_reporte -->
+
+    <div class="tabla-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Área</th>
+                    <th>Antigüedad</th>
+                    <th>Vacaciones Disp.</th>
+                    <th>Total Horas Extras</th>
+                    {% if es_rrhh %}<th>Salario (Confidencial)</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in resumen_extras %}
+                <tr>
+                    <td>{{ emp.apellidos }}, {{ emp.nombres }}</td>
+                    <td>{{ emp.area.nombre }}</td>
+                    <td>{{ emp.antiguedad_texto }}</td>
+                    <td>{{ emp.dias_vacaciones_disponibles }} días</td>
+                    <td><strong>{{ emp.total_extras|default:"0.00" }} h</strong></td>
+                    {% if es_rrhh %}<td>S/ {{ emp.salario }}</td>{% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div><!-- Fin div.tabla-responsive -->
+</section><!-- Fin section resumen_extras -->
+
+<section class="panel">
+    <h2>Detalle Diario de Asistencias</h2>
+    <div class="tabla-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Empleado</th>
+                    <th>Área</th>
+                    <th>Entrada</th>
+                    <th>Salida</th>
+                    <th>Horas</th>
+                    <th>Extras</th>
+                    {% if es_rrhh %}<th>Acción RRHH</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in asistencias %}
+                <tr>
+                    <td>{{ a.fecha|date:"d/m/Y" }}</td>
+                    <td>{{ a.empleado.apellidos }}, {{ a.empleado.nombres }}</td>
+                    <td>{{ a.empleado.area.nombre }}</td>
+                    <td>{{ a.hora_entrada|time:"H:i" }}</td>
+                    <td>{% if a.hora_salida %}{{ a.hora_salida|time:"H:i" }}{% else %}--{% endif %}</td>
+                    <td>{{ a.horas_trabajadas }} h</td>
+                    <td>{{ a.horas_extras }} h</td>
+                    {% if es_rrhh %}
+                        <td><a href="{% url 'corregir_asistencia' a.id %}" class="btn btn-primario">Corregir</a></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div><!-- Fin div.tabla-responsive -->
+</section><!-- Fin section detalle_asistencias -->
+
+{% if es_rrhh %}
+<section class="panel">
+    <h2>Bitácora de Auditoría RRHH</h2>
+    <div class="tabla-responsive">
+        <table>
+            <thead><tr><th>Fecha/Hora</th><th>Usuario</th><th>IP</th><th>Acción</th><th>Ruta</th></tr></thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.fecha_hora|date:"d/m/Y H:i:s" }}</td>
+                    <td><strong>{{ log.usuario }}</strong></td>
+                    <td>{{ log.direccion_ip }}</td>
+                    <td>{{ log.accion }}</td>
+                    <td><code>{{ log.ruta }}</code></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">Sin eventos registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div><!-- Fin div.tabla-responsive -->
+</section><!-- Fin section logs -->
+{% endif %}
+{% endblock %}
